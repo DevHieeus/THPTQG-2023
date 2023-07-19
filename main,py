@@ -1,1 +1,133 @@
+import requests, csv, os
+from time import sleep
 
+def Banner():
+    os.system("cls" if os.name == "nt" else "clear")
+    os.system('title CRAWL ĐIỂM THI THPTQG - Ngx_Hieeus')
+    print("""
+   ████████╗██╗  ██╗██████╗ ████████╗ ██████╗  ██████╗               
+   ╚══██╔══╝██║  ██║██╔══██╗╚══██╔══╝██╔═══██╗██╔════╝       
+      ██║   ███████║██████╔╝   ██║   ██║   ██║██║  ███╗        
+      ██║   ██╔══██║██╔═══╝    ██║   ██║▄▄ ██║██║   ██║      
+      ██║   ██║  ██║██║        ██║   ╚██████╔╝╚██████╔╝              
+      ╚═╝   ╚═╝  ╚═╝╚═╝        ╚═╝    ╚══▀▀═╝  ╚═════╝            
+    """)
+
+def TraCuuDiemThi():
+    SoBaoDanh = input("Nhập SBD : ")
+    response = requests.get(f'https://dantri.com.vn/thpt/1/0/99/{SoBaoDanh}/2023/0.2/search-gradle.htm').json()
+    DiemThi = response['student']
+    if DiemThi['sbd'] == None:
+        print("Thí sinh không tồn tại !")
+        return
+    if DiemThi['toan'] == None:
+        DiemThi['toan'] = "Không Thi"
+    if DiemThi['van'] == None:
+        DiemThi['van'] = "Không Thi"
+    if DiemThi['ngoaiNgu'] == None:
+        DiemThi['ngoaiNgu'] = "Không Thi"
+    if DiemThi['vatLy'] == None:
+        DiemThi['vatLy'] = "Không Thi"
+    if DiemThi['hoaHoc'] == None:
+        DiemThi['hoaHoc'] = "Không Thi"
+    if DiemThi['sinhHoc'] == None:
+        DiemThi['sinhHoc'] = "Không Thi"
+    if DiemThi['lichSu'] == None:
+        DiemThi['lichSu'] = "Không Thi"
+    if DiemThi['diaLy'] == None:
+        DiemThi['diaLy'] = "Không Thi"
+    if DiemThi['gdcd'] == None:
+        DiemThi['gdcd'] = "Không Thi"
+    print(f"Thí Sinh Số Báo Danh {SoBaoDanh} | Toán : {DiemThi['toan']} | Văn : {DiemThi['van']} | Ngoại Ngữ : {DiemThi['ngoaiNgu']} | Vật Lý : {DiemThi['vatLy']} | Hoá Học : {DiemThi['hoaHoc']} | Sinh Học : {DiemThi['sinhHoc']} | Lịch Sử : {DiemThi['lichSu']} | Địa Lý : {DiemThi['diaLy']} | GDCD : {DiemThi['gdcd']}")
+def CrawlData(endl=True):
+        i = 0
+        file_output = open('Output.csv', mode='w', encoding='utf-8-sig')
+        file_output.write('Số Báo Danh')
+        file_output.write(',' + 'Toán')
+        file_output.write(',' + 'Văn')
+        file_output.write(',' + 'Ngoại Ngữ')
+        file_output.write(',' + 'Vật Lý')
+        file_output.write(',' + 'Hoá Học')
+        file_output.write(',' + 'Sinh Học')
+        file_output.write(',' + 'Lịch Sử')
+        file_output.write(',' + 'Địa Lý')
+        file_output.write(',' + 'GDCD')
+        file_output.write('\n')
+        while True:
+            i = i + 1
+            SoBaoDanh = "0100000" + str(i) if i < 10 and i >= 1  else "010000" + str(i) if i >= 10 and i < 100 else '01000' + str(i) if i >= 100 and i < 1000 else "0100" + str(i) if i >= 1000 and i < 10000 else "010" + str(i) if i>=10000 and i < 100000 else "01" + str(i) if i >= 100000 and i < 1000000 else "9" + str(i) if i>=1000000 and i < 10000000 else str(i)
+            try:
+                response = requests.get(f'https://dantri.com.vn/thpt/1/0/99/{SoBaoDanh}/2023/0.2/search-gradle.htm').json()
+                DiemThi = response['student']
+                if DiemThi['toan'] == None:
+                    DiemThi['toan'] = "0 (KT)"
+                if DiemThi['van'] == None:
+                    DiemThi['van'] = "0 (KT)"
+                if DiemThi['ngoaiNgu'] == None:
+                    DiemThi['ngoaiNgu'] = "0 (KT)"
+                if DiemThi['vatLy'] == None:
+                    DiemThi['vatLy'] = "0 (KT)"
+                if DiemThi['hoaHoc'] == None:
+                    DiemThi['hoaHoc'] = "0 (KT)"
+                if DiemThi['sinhHoc'] == None:
+                    DiemThi['sinhHoc'] = "0 (KT)"
+                if DiemThi['lichSu'] == None:
+                    DiemThi['lichSu'] = "0 (KT)"
+                if DiemThi['diaLy'] == None:
+                    DiemThi['diaLy'] = "0 (KT)"
+                if DiemThi['gdcd'] == None:
+                    DiemThi['gdcd'] = "0 (KT)"
+                if DiemThi['sbd'] == None:
+                    break
+                if endl == True:
+                    print(f"Đang crawl data của thí sinh số báo danh {SoBaoDanh} !")
+                elif endl == False:
+                    print(f'\rĐang crawl data của thí sinh số báo danh {SoBaoDanh} !', end='')
+                file_output.write(DiemThi['sbd'] + ',')
+                file_output.write(DiemThi['toan'] + ',')
+                file_output.write(DiemThi['van'] + ',')
+                file_output.write(DiemThi['ngoaiNgu'] + ',')
+                file_output.write(DiemThi['vatLy'] + ',')
+                file_output.write(DiemThi['hoaHoc'] + ',')
+                file_output.write(DiemThi['sinhHoc'] + ',')
+                file_output.write(DiemThi['lichSu'] + ',')
+                file_output.write(DiemThi['diaLy'] + ',')
+                file_output.write(DiemThi['gdcd'])
+                file_output.write('\n')
+            except:
+                continue
+if __name__ == "__main__":
+    endl = True
+    Banner()
+    print('''
+    1. Tra Cứu Điểm Thi
+    2. Crawl Điểm Thi
+    3. Exit
+          ''')
+    user_input = input(">>> Number : ")
+    if user_input == "/endl":
+        if endl == True:
+            endl = False
+            print("End line : Disble !")
+        else:
+            endl = True
+            print("End line : Enable !")
+        sleep(1)
+        os.system('cls')
+        Banner()
+        print('''
+        1. Tra Cứu Điểm Thi
+        2. Crawl Điểm Thi
+        3. Exit
+          ''')
+        user_input = input(">>> Number : ")
+        if user_input == "1":
+            TraCuuDiemThi()
+        elif user_input == "2":
+            CrawlData(endl)
+    elif user_input == "1":
+        TraCuuDiemThi()
+    elif user_input == "2":
+        CrawlData(endl)
+    else:
+        raise SystemExit()
